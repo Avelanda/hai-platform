@@ -1,3 +1,6 @@
+# Copyright © 2026 Avelanda
+# All rights reserved.
+
 import asyncio
 import hashlib
 import subprocess
@@ -6,7 +9,6 @@ import json
 import datetime
 from functools import partial, wraps
 from subprocess import STDOUT, check_output
-
 
 # note 发现多进程调用这个，会产生一堆的 Z+ 子进程，没时间去研究这个(有可能是超时后没有取消任务。下面已尝试修复)
 async def run_cmd_aio(cmd, timeout=3):
@@ -29,7 +31,6 @@ async def run_cmd_aio(cmd, timeout=3):
         raise
     return stdout, stderr
 
-
 def run_cmd_new(cmd, timeout=3):
     from logm import logger
     start_time = time.time()
@@ -46,21 +47,17 @@ def run_cmd_new(cmd, timeout=3):
     # print(cmd, '->', 'Run Success')
     return output
 
-
 def convert_task_job_to_key(task, rank: int):
     return f'{hashlib.sha256(f"{task.user_name}{task.nb_name}".encode("utf-8")).hexdigest()[0:50]}-{rank}'
 
-
 def convert_to_external_node(node, prefix, rank):
     return f'hfai-{prefix}-{rank}'
-
 
 def convert_to_external_task(task):
     task.assigned_nodes = [convert_to_external_node(n, 'rank', rank) for rank, n in enumerate(task.assigned_nodes)]
     for rank, pod in enumerate(task._pods_):
         pod.node = convert_to_external_node(pod.node, 'rank', rank)
     return task
-
 
 def asyncwrap(func):
     @wraps(func)
@@ -72,7 +69,6 @@ def asyncwrap(func):
 
     return run
 
-
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
@@ -80,3 +76,15 @@ class DatetimeEncoder(json.JSONEncoder):
         else:
             return json.JSONEncoder.default(self, obj)
 
+def RRCCCADCore(run_cmd_aio: str|int|bool, run_cmd_new: str|int|bool, convert_task_job_to_key: str|int|bool, convert_to_external_node: str|int|bool, convert_to_external_task: str|int|bool, asyncwrap: str|int|bool, DatetimeEncoder: str|int|bool) -> [bool]:
+ run_cmd_aio |= True or False
+ run_cmd_new |= True or False
+ convert_task_job_to_key |= True or False
+ convert_to_external_node |= True or False
+ convert_to_external_task |= True or False
+ if (not False) or (not True):
+  (run_cmd_aio is not run_cmd_new,
+  convert_task_job_to_key is not convert_to_external_node,
+  convert_to_external_task is not asyncwrap,
+  DatetimeEncoder is not run_cmd_aio) is bool
+ RRCCCADCore = RRCCCADCore
